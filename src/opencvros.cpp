@@ -83,7 +83,7 @@ typedef union U_FloatParse
 
 int ReadDepthData(unsigned int height_pos, unsigned int width_pos, sensor_msgs::ImageConstPtr depth_image)
 {
-    //credits opencv math to Kyle Hounslaw
+    //credits opencv math and tutorial to Kyle Hounslaw
     // If position is invalid
     if ((height_pos >= depth_image->height) || (width_pos >= depth_image->width))
         return -1;
@@ -125,9 +125,11 @@ int ReadDepthData(unsigned int height_pos, unsigned int width_pos, sensor_msgs::
         return temp_val;
     return -1;  // If depth data invalid
 }
-
+//imagecallback takes the camera sensor values, extracts the wanted HSV values from them and then finds the biggest part of the image which has this given value.
+//After this a bounding box is put around that part of the image, and from the center of this box the depth value and position on the screen is calculated.
 void imageCallback(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::ImageConstPtr& msg_depth, const sensor_msgs::CameraInfoConstPtr& right_camera)
 {
+    //CVBridge is used to convert the image from ROS to OpenCV format in order to use OpenCV's functions.
     cv_bridge::CvImagePtr cv_ptr;
     try
     {
@@ -160,8 +162,8 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::Ima
         posY = m01 / area;
     }
 
-    //morphological opening (remove small objects from the foreground)
-    //morphsize to filter out small objects
+    //Remove small objects from the foreground.Morphsize (ms) can be changed to filter out small objects. 
+    //The bigger the value of ms (erosion), the bigger an object has to be to get picked up by the camera.
     int ms = 25;
     int ds = 5;
     erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(ms, ms)) );
@@ -205,7 +207,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::Ima
     Point center = Point(((width/2) + bounding_rect.tl().x), ((height/2) + bounding_rect.tl().y));
     int depth = ReadDepthData(center.y, center.x, msg_depth);
 
-    // print coordinates from the object
+    // Print coordinates from the object
     //ROS_INFO("Center x: %d, center y: %d\n", center.x, center.y);
     drawContours(cv_ptr->image, contours, largest_contour_index, Scalar(255), 1, 8, hierarchy); // Draw the largest contour using previously stored index.
     circle(cv_ptr->image, center, 3, Scalar(255,255,0), -1, 8, 0); // Draw dot in center of bb
@@ -213,7 +215,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::Ima
 
     imshow("original", cv_ptr->image); //show the original image
     camcenter = center.x;
-
+//Make a new node 
     ros::NodeHandle nc;
     ros::Publisher ctr_pub = nc.advertise<std_msgs::Int32>("centerdata", 1);
     if (camcenter>0)
