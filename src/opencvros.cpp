@@ -74,16 +74,16 @@ int iLowV = 47;
 int iHighV = 255;
 
 
-
+//A typedef creates an alias which simplifies the use of multiple identifiers.
 typedef union U_FloatParse
 {
     float float_data;
     unsigned char byte_data[4];
 } U_FloatConvert;
-
+//ReadDepthData finds out what the depth of the object is.
 int ReadDepthData(unsigned int height_pos, unsigned int width_pos, sensor_msgs::ImageConstPtr depth_image)
 {
-    //credits opencv math and tutorial to Kyle Hounslaw
+
     // If position is invalid
     if ((height_pos >= depth_image->height) || (width_pos >= depth_image->width))
         return -1;
@@ -125,6 +125,7 @@ int ReadDepthData(unsigned int height_pos, unsigned int width_pos, sensor_msgs::
         return temp_val;
     return -1;  // If depth data invalid
 }
+
 //imagecallback takes the camera sensor values, extracts the wanted HSV values from them and then finds the biggest part of the image which has this given value.
 //After this a bounding box is put around that part of the image, and from the center of this box the depth value and position on the screen is calculated.
 void imageCallback(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::ImageConstPtr& msg_depth, const sensor_msgs::CameraInfoConstPtr& right_camera)
@@ -140,7 +141,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::Ima
         ROS_ERROR("cv_bridge exception: %s", e.what());
         return;
     }
-
+    //source opencv tutorial: Kyle Hounslaw
     Mat imgOriginal;
     Mat imgHSV;
     cv::cvtColor(cv_ptr->image, imgHSV, cv::COLOR_BGR2HSV); //Convert the captured frame from RGB to HSV
@@ -235,7 +236,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::Ima
         dpt_pub.publish(dpt);
     }
 }
-
+//Main function subscribes to the camera topics and enters them into the imageCallback function
 int main(int argc, char** argv)
 {
 
@@ -252,19 +253,15 @@ int main(int argc, char** argv)
     ros::Publisher dpt_pub = nd.advertise<std_msgs::Int32>("depthdata", 1);
 
 
-    //message_filters::Subscriber<std_msgs::String> coordinates_array(nh_, "chatter" , 1);
-
     typedef sync_policies::ApproximateTime<Image, Image, CameraInfo> MySyncPolicy;
     Synchronizer<MySyncPolicy> sync(MySyncPolicy(1), rgb_image_sub, depth_image_sub, camera_info_sub);
-    //TimeSynchronizer<Image, Image, CameraInfo> sync(rgb_image_sub, depth_image_sub, camera_info_sub, 10);
     sync.registerCallback(boost::bind(&imageCallback, _1, _2, _3));
 
     //cv::namedWindow(OPENCV_WINDOW);
     namedWindow("original", CV_WINDOW_AUTOSIZE); //create a window called "Control"
     namedWindow("hsv", CV_WINDOW_AUTOSIZE);
 
-    // TODO change to hsv values loaded in. For the green card it is: H:42, 90. S:90,255. V:0,255
-    //Create trackbars in "Control" window
+    //HSV Trackbar creation, these are bound to the colored image output window.
     cvCreateTrackbar("LowH", "original", &iLowH, 179); //Hue (0 - 179)
     cvCreateTrackbar("HighH", "original", &iHighH, 179);
 
