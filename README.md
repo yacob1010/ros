@@ -1,2 +1,2 @@
 # ros
-Project Robotica ROS
+Project Robotica ROS concerning the OpenCV part from Yacob ben Youb
