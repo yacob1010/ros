@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(opencvros)
 
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -30,12 +31,12 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 
-## Declare a cpp executable
+## Declare the opencvros_node executable so it can be executed with "rosrun opencvros opencvros_node"
 add_executable(opencvros_node src/opencvros.cpp)
 target_link_libraries(opencvros_node ${catkin_LIBRARIES})
 add_dependencies(opencvros_node opencv_generate_messages_cpp)
 
-## Declare a cpp executable
+## Declare the driving_node executable so it can be executed with "rosrun opencvros driving_node"
 add_executable(driving_node src/driving.cpp)
 target_link_libraries(driving_node ${catkin_LIBRARIES})
 add_dependencies(driving_node opencv_generate_messages_cpp)
