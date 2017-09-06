@@ -21,7 +21,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 
-static const std::string OPENCV_WINDOW = "Image window";
+
 using namespace cv;
 using namespace std;
 using namespace message_filters;
@@ -33,6 +33,7 @@ static int funcscan = 0;
 static int mainscan = 0;
 
 
+//static const std::string OPENCV_WINDOW = "Image window";
 /* Groen flesje
 int iLowH = 30;
 int iHighH = 69;
@@ -80,7 +81,7 @@ typedef union U_FloatParse
     float float_data;
     unsigned char byte_data[4];
 } U_FloatConvert;
-//ReadDepthData finds out what the depth of the object is.
+//ReadDepthData finds out what the depth of the object is and returns is
 int ReadDepthData(unsigned int height_pos, unsigned int width_pos, sensor_msgs::ImageConstPtr depth_image)
 {
 
