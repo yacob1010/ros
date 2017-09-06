@@ -26,11 +26,8 @@ using namespace cv;
 using namespace std;
 using namespace message_filters;
 using namespace sensor_msgs;
-int drivestate = 1;
 
-static int camcenter;
-static int funcscan = 0;
-static int mainscan = 0;
+
 
 
 //static const std::string OPENCV_WINDOW = "Image window";
@@ -74,6 +71,7 @@ int iHighS = 255;
 int iLowV = 47;
 int iHighV = 255;
 
+static int camcenter;
 
 //A typedef creates an alias which simplifies the use of multiple identifiers.
 typedef union U_FloatParse
